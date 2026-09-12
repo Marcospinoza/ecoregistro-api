@@ -69,7 +69,7 @@ module.exports = function crearRutasAuth(pool) {
 
         try {
             const resultado = await pool.query(`
-                SELECT id, nombre, usuario, password_hash, activo
+                SELECT id, nombre, usuario, password_hash, activo, rol
                 FROM public.usuarios
                 WHERE usuario = $1
             `, [usuarioNormalizado]);
@@ -95,7 +95,7 @@ module.exports = function crearRutasAuth(pool) {
                 secreto,
                 {
                     algorithm: "HS256",
-                    subject: cuenta.id,
+                    subject: String(cuenta.id),
                     issuer: "ecoregistro-api",
                     audience: "ecoregistro-app",
                     expiresIn: "1h"
@@ -111,7 +111,8 @@ module.exports = function crearRutasAuth(pool) {
                 usuario: {
                     id: cuenta.id,
                     nombre: cuenta.nombre,
-                    usuario: cuenta.usuario
+                    usuario: cuenta.usuario,
+                    rol: cuenta.rol
                 }
             });
 

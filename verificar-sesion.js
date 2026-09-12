@@ -41,7 +41,7 @@ module.exports = function crearVerificador(pool) {
 
         try {
             const resultado = await pool.query(`
-                SELECT id
+                SELECT id, rol
                 FROM public.usuarios
                 WHERE id = $1 AND activo = TRUE
             `, [datos.sub]);
@@ -55,6 +55,7 @@ module.exports = function crearVerificador(pool) {
 
             // La identidad procede del token verificado.
             req.usuarioId = resultado.rows[0].id;
+            req.rol = resultado.rows[0].rol;
 
             return next();
 

@@ -21,6 +21,8 @@ app.use(express.json());
 
 app.use("/api/recolecciones", crearVerificador(pool));
 app.use("/api/auth", crearRutasAuth(pool));
+app.use("/api/auth", require("./v2").registro(pool));
+app.use("/api/v2", require("./v2").rutas(pool));
 
 // Comprueba que la API puede consultar la base de datos.
 app.get("/api/salud", async (req, res) => {
@@ -119,11 +121,11 @@ app.post("/api/recolecciones", async (req, res) => {
         errores.push("El UUID debe ser válido y de versión 4");
     }
 
-    if (typeof responsable !== "string" || !responsable.trim()) {
+    if (typeof responsable !== "string" || !responsable.trim() || responsable.length > 150) {
         errores.push("Ingresa el responsable");
     }
 
-    if (typeof zona !== "string" || !zona.trim()) {
+    if (typeof zona !== "string" || !zona.trim() || zona.length > 150) {
         errores.push("Ingresa la zona");
     }
 
@@ -141,7 +143,7 @@ app.post("/api/recolecciones", async (req, res) => {
         errores.push("La unidad debe ser kg o L");
     }
 
-    if (typeof observaciones !== "string") {
+    if (typeof observaciones !== "string" || observaciones.length > 4000) {
         errores.push("Las observaciones deben ser texto");
     }
 

@@ -37,18 +37,20 @@ async function crearUsuario() {
         }
 
         // Genera un hash con una sal aleatoria.
+        const rol = process.env.CREAR_ROL || "recolector";
+        if (!["recolector", "administrador"].includes(rol)) throw new Error("CREAR_ROL inválido");
         const passwordHash = await bcrypt.hash(password, 12);
 
         const resultado = await pool.query(`
             INSERT INTO public.usuarios (
                 nombre,
                 usuario,
-                password_hash
+                password_hash, rol
             )
-            VALUES ($1, $2, $3)
+            VALUES ($1, $2, $3, $4)
             ON CONFLICT (usuario) DO NOTHING
-            RETURNING id, nombre, usuario, activo
-        `, [nombre, usuario, passwordHash]);
+            RETURNING id, nombre, usuario, activo, rol
+        `, [nombre, usuario, passwordHash, rol]);
 
         if (resultado.rowCount === 0) {
             console.log(
